@@ -1,8 +1,9 @@
 library(dplyr)
 library(psych)
-library(survey)
+library(weights)
+library(questionr)
 
-data <- read.csv('masculinity-survey/raw-responses.csv')
+data <- read.csv('raw-responses.csv')
 
 #rename variables
 names(data) <- c("x", "start_date", "end_date",
@@ -35,8 +36,8 @@ names(data) <- c("x", "start_date", "end_date",
                  "demo_age_group", "demo_has_kids", "demo_straight", "person_weight")
 employed <- dplyr::filter(data, employment == "Employed, working full-time" | employment == "Employed, working part-time")
 
-summary(employed$disadv_accuse_sh)
-summary(employed$disadv_racist_sexist)
-summary(employed$heard_of_metoo)
+wpct(employed$heard_of_metoo, employed$person_weight)
+wpct(employed$disadv_racist_sexist, employed$person_weight)
+wpct(employed$disadv_accuse_sh, employed$person_weight)
 
-
+test <- wtd.table(employed$demo_most_ed, y = employed$disadv_accuse_sh, weights = employed$person_weight)
